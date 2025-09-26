@@ -52,7 +52,10 @@ const NovaHealthDashboard = () => {
     setInput("");
 
     try {
-      const apiUrl = "http://localhost:5000/chat";
+      // 🆕 NEW: Using the environment variable for the API URL
+      const backendUrl = import.meta.env.VITE_BACKEND_URL;
+      const apiUrl = `${backendUrl}/chat`;
+
       const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
@@ -172,6 +175,11 @@ const NovaHealthDashboard = () => {
                   type="text"
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      handleSend();
+                    }
+                  }}
                   placeholder="Type a message..."
                   className="flex-1 border rounded-lg p-2 focus:ring-2 focus:ring-blue-300 transition"
                 />
@@ -327,67 +335,52 @@ const NovaHealthDashboard = () => {
             </Card>
           </div>
         )}
-        {/* PROFILE */}
-{activeTab === "profile" && (
-  <Card className="shadow-lg border border-gray-200 hover:shadow-xl transition-all">
-    <CardHeader>
-      <CardTitle className="text-teal-700">Profile & Settings</CardTitle>
-      <CardDescription>Manage your account</CardDescription>
-    </CardHeader>
-    <CardContent className="space-y-6">
-      {/* Avatar + Info */}
-      <div className="flex items-center space-x-4">
-        <img
-          src="https://i.pravatar.cc/120"
-          alt="Profile"
-          className="w-24 h-24 rounded-full border shadow-md"
-        />
-        <div>
-          <h3 className="text-xl font-bold text-gray-800">{userData.name}</h3>
-          <p className="text-gray-600">{userData.email}</p>
-          <span className="text-sm px-3 py-1 bg-teal-100 text-teal-700 rounded-full">
-            Wellness Score: {userData.wellnessScore}
-          </span>
-        </div>
-      </div>
-
-      {/* Preferences */}
-      <div>
-        <h3 className="font-semibold mb-3 text-teal-600">Preferences</h3>
-        {[
-          "Medication Reminders",
-          "Fitness Nudges",
-          "Nutrition Suggestions",
-          "Emotional Check-ins",
-        ].map((pref) => (
-          <label key={pref} className="flex items-center space-x-2 mb-2">
-            <input type="checkbox" defaultChecked className="accent-teal-500" />
-            <span>{pref}</span>
-          </label>
-        ))}
-      </div>
-
-      {/* Theme Switch */}
-      <div className="flex items-center justify-between border-t pt-4">
-        <span className="font-medium text-gray-700">Theme</span>
-        <div className="flex space-x-2">
-          <button
-            className="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300"
-            onClick={() => document.documentElement.classList.remove("dark")}
-          >
-            ☀ Light
-          </button>
-          <button
-            className="px-4 py-2 rounded-lg bg-gray-800 text-white hover:bg-gray-700"
-            onClick={() => document.documentElement.classList.add("dark")}
-          >
-            🌙 Dark
-          </button>
-        </div>
-      </div>
-    </CardContent>
-  </Card>
-)}
+        {activeTab === "profile" && (
+          <Card className="shadow-lg border border-gray-200 hover:shadow-xl transition-all">
+            <CardHeader>
+              <CardTitle className="text-teal-700">Profile & Settings</CardTitle>
+              <CardDescription>Manage your account</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="mb-4">
+                <h3 className="font-semibold text-teal-600">User Info</h3>
+                <p>Name: {userData.name}</p>
+                <p>Email: {userData.email}</p>
+              </div>
+              <div>
+                <h3 className="font-semibold mb-2 text-teal-600">Preferences</h3>
+                {[
+                  "Medication Reminders",
+                  "Fitness Nudges",
+                  "Nutrition Suggestions",
+                  "Emotional Check-ins",
+                ].map((pref) => (
+                  <label key={pref} className="flex items-center space-x-2 mb-2">
+                    <input type="checkbox" defaultChecked className="accent-teal-500" />
+                    <span>{pref}</span>
+                  </label>
+                ))}
+              </div>
+              <div className="flex items-center justify-between border-t pt-4">
+                <span className="font-medium text-gray-700">Theme</span>
+                <div className="flex space-x-2">
+                  <button
+                    className="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300"
+                    onClick={() => document.documentElement.classList.remove("dark")}
+                  >
+                    ☀ Light
+                  </button>
+                  <button
+                    className="px-4 py-2 rounded-lg bg-gray-800 text-white hover:bg-gray-700"
+                    onClick={() => document.documentElement.classList.add("dark")}
+                  >
+                    🌙 Dark
+                  </button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </main>
     </div>
   );
